@@ -1,0 +1,193 @@
+<!-- templates/index.html -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>NeuroVoice AI</title>
+
+    <link rel="stylesheet" href="/static/style.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="bg-grid"></div>
+
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+
+    <nav class="nav-logo">
+      <div class="logo" style="text-align: center;">LLM PROJECT</div>
+
+      <button class="nav-btn">AI SPEECH</button>
+    </nav>
+
+    <main>
+      <div class="hero">
+        <div class="tag">NEXT GENERATION AI VOICE</div>
+        <h1>
+          <span>AI Text to Speech</span>
+        </h1>
+        <p>
+          Generate ultra realistic AI speech with modern neural voice synthesis.
+        </p>
+      </div>
+
+      <div class="glass-card">
+        <div class="top-bar">
+          <div class="status">
+            <div class="dot"></div>
+            AI Engine Active
+          </div>
+
+          <div class="badge">Neural TTS</div>
+        </div>
+
+        <textarea id="text" placeholder="Type your text here..."></textarea>
+
+        <div class="bottom-controls">
+          <div class="custom-select" id="customSelect">
+            <div class="select-selected" onclick="toggleDropdown()">
+              <span id="selectedText"> English </span>
+
+              <span class="arrow">▲</span>
+            </div>
+
+            <div class="select-options" id="selectOptions">
+              <div class="option" onclick="selectLanguage('eng', 'English')">
+                English
+              </div>
+
+              <div class="option" onclick="selectLanguage('hin', 'Hindi')">
+                Hindi
+              </div>
+            </div>
+          </div>
+
+          <input type="hidden" id="language" value="eng" />
+
+          <button class="generate-btn" onclick="generateSpeech()">
+            Generate Voice
+          </button>
+        </div>
+
+        <div class="loader" id="loader"></div>
+
+        <div class="visualizer">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div class="audio-player">
+          <button class="play-btn" id="playBtn">▶</button>
+
+          <div class="audio-info">
+            <div class="progress-area">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="time">
+              <span id="currentTime"> 0:00 </span>
+
+              <span id="duration"> 0:00 </span>
+            </div>
+          </div>
+        </div>
+
+        <audio id="audioPlayer"></audio>
+
+        <a id="downloadBtn" download> Download Audio </a>
+      </div>
+      <section class="examples">
+
+    <h2>Quick Examples</h2>
+<p class="examples-subtitle">
+    Choose a template and start generating speech instantly.
+</p>
+    <div class="prompt-grid">
+
+        <div class="prompt-card"
+             onclick="loadPrompt('demo')">
+
+            <div class="icon">🎓</div>
+
+            <h3>Project Demo</h3>
+
+            <p>
+                Demonstrate your TTS project.
+            </p>
+
+        </div>
+
+        <div class="prompt-card"
+             onclick="loadPrompt('presentation')">
+
+            <div class="icon">🤖</div>
+
+            <h3>AI Presentation</h3>
+
+            <p>
+                Explain AI concepts clearly.
+            </p>
+
+        </div>
+
+        <div class="prompt-card"
+             onclick="loadPrompt('support')">
+
+            <div class="icon">🎧</div>
+
+            <h3>Customer Support</h3>
+
+            <p>
+                Automated voice responses.
+            </p>
+
+        </div>
+
+        <div class="prompt-card"
+             onclick="loadPrompt('education')">
+
+            <div class="icon">📚</div>
+
+            <h3>Education</h3>
+
+            <p>
+                Educational content examples.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+      <footer class="footer">
+          <table class="table">
+          
+          <span>
+            <h5>--- Crafted with ❤️ by Pranay ---</h5>
+            <br />
+          </span>
+        </footer>
+    </main>
+    <script src="/static/script.js"></script>
+  </body>
+</html>
