@@ -9,9 +9,17 @@ pinned: false
 
 # NeuroVoice AI
 
-A modern AI Text-to-Speech web application built with:
+AI Text-to-Speech web application built using:
 
 - Flask
 - Hugging Face Transformers
 - PyTorch
 - MMS-TTS
+
+## Features
+
+- English Text-to-Speech
+- Hindi Text-to-Speech
+- Modern UI
+- Audio Download
+- Real-time Voice Generation
