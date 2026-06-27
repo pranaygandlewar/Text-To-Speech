@@ -1,6 +1,17 @@
-Flask==3.0.3
-transformers==4.52.4
-torch
-soundfile
-sentencepiece
-safetensors
+---
+title: Text To Speech
+emoji: 🎙️
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
+# NeuroVoice AI
+
+A modern AI Text-to-Speech web application built with:
+
+- Flask
+- Hugging Face Transformers
+- PyTorch
+- MMS-TTS
