@@ -1,12 +1,25 @@
-# NeuroVoice AI
+---
+title: Text To Speech
+emoji: 🎙️
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+---
 
-AI Text-to-Speech Web Application built using:
+# Text-To-Speech
+
+A modern AI Text-to-Speech web application built with:
 
 - Flask
 - Hugging Face Transformers
 - PyTorch
 - MMS-TTS
 
-Supports:
-- English
-- Hindi
+## Features
+
+- English Voice
+- Hindi Voice
+- Modern UI
+- Audio Download
+- Real-time Voice Generation
