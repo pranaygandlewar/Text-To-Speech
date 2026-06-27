@@ -1,224 +1,160 @@
 async function generateSpeech() {
+  const text = document.getElementById("text").value;
+  const language = document.getElementById("language").value;
 
-    const text = document.getElementById("text").value;
-    const language = document.getElementById("language").value;
+  const loader = document.getElementById("loader");
 
-    const loader = document.getElementById("loader");
+  document.getElementById("loadingScreen").style.display = "flex";
+  try {
+    const response = await fetch("/generate", {
+      method: "POST",
 
-    loader.style.display = "block";
+      headers: {
+        "Content-Type": "application/json",
+      },
 
-    try{
+      body: JSON.stringify({
+        text,
+        language,
+      }),
+    });
 
-        const response = await fetch("/generate", {
+    const data = await response.json();
 
-            method:"POST",
+    document.getElementById("loadingScreen").style.display = "none";
 
-            headers:{
-                "Content-Type":"application/json"
-            },
+    const audioPlayer = document.getElementById("audioPlayer");
 
-            body:JSON.stringify({
-                text,
-                language
-            })
+    audioPlayer.src = data.audio_url + "?t=" + new Date().getTime();
 
-        });
+    audioPlayer.play();
 
-        const data = await response.json();
+    const downloadBtn = document.getElementById("downloadBtn");
 
-        loader.style.display = "none";
+    downloadBtn.href = data.audio_url;
+  } catch (error) {
+    loader.style.display = "none";
 
-        const audioPlayer =
-        document.getElementById("audioPlayer");
+    alert("Invalid details !");
 
-        audioPlayer.src =
-        data.audio_url + "?t=" + new Date().getTime();
-
-        audioPlayer.play();
-
-        const downloadBtn =
-        document.getElementById("downloadBtn");
-
-        downloadBtn.href = data.audio_url;
-
-    }
-
-    catch(error){
-
-        loader.style.display = "none";
-
-        alert("Invalid details !");
-
-        console.log(error);
-
-    }
-
+    console.log(error);
+  }
 }
 /* CUSTOM DROPDOWN */
 
-function toggleDropdown(){
-
-    document
-    .getElementById("customSelect")
-    .classList
-    .toggle("active");
+function toggleDropdown() {
+  document.getElementById("customSelect").classList.toggle("active");
 }
 
-function selectLanguage(value,text){
+function selectLanguage(value, text) {
+  document.getElementById("language").value = value;
 
-    document
-    .getElementById("language")
-    .value = value;
+  document.getElementById("selectedText").innerText = text;
 
-    document
-    .getElementById("selectedText")
-    .innerText = text;
-
-    document
-    .getElementById("customSelect")
-    .classList
-    .remove("active");
+  document.getElementById("customSelect").classList.remove("active");
 }
 
 /* CLOSE ON OUTSIDE CLICK */
 
-window.addEventListener("click", function(e){
+window.addEventListener("click", function (e) {
+  const select = document.getElementById("customSelect");
 
-    const select =
-    document.getElementById("customSelect");
-
-    if(!select.contains(e.target)){
-``
-        select.classList.remove("active");
-    }
-
+  if (!select.contains(e.target)) {
+    ``;
+    select.classList.remove("active");
+  }
 });
 /* AUDIO PLAYER */
 
-const audio =
-document.getElementById("audioPlayer");
+const audio = document.getElementById("audioPlayer");
 
-const playBtn =
-document.getElementById("playBtn");
+const playBtn = document.getElementById("playBtn");
 
-const progressBar =
-document.getElementById("progressBar");
+const progressBar = document.getElementById("progressBar");
 
-const currentTimeEl =
-document.getElementById("currentTime");
+const currentTimeEl = document.getElementById("currentTime");
 
-const durationEl =
-document.getElementById("duration");
+const durationEl = document.getElementById("duration");
 
-const progressArea =
-document.querySelector(".progress-area");
+const progressArea = document.querySelector(".progress-area");
 
 /* PLAY / PAUSE */
 
 playBtn.addEventListener("click", () => {
+  if (audio.paused) {
+    audio.play();
 
-    if(audio.paused){
+    playBtn.innerHTML = "❚❚";
 
-        audio.play();
+    animateProgress();
+  } else {
+    audio.pause();
 
-        playBtn.innerHTML = "❚❚";
-
-        animateProgress();
-    }
-
-    else{
-
-        audio.pause();
-
-        playBtn.innerHTML = "▶";
-    }
-
+    playBtn.innerHTML = "▶";
+  }
 });
 
 /* SMOOTH PROGRESS ANIMATION */
 
-function animateProgress(){
+function animateProgress() {
+  if (!audio.paused) {
+    const progress = (audio.currentTime / audio.duration) * 100;
 
-    if(!audio.paused){
+    progressBar.style.width = progress + "%";
 
-        const progress =
-        (audio.currentTime / audio.duration) * 100;
+    currentTimeEl.innerText = formatTime(audio.currentTime);
 
-        progressBar.style.width =
-        progress + "%";
+    durationEl.innerText = formatTime(audio.duration);
 
-        currentTimeEl.innerText =
-        formatTime(audio.currentTime);
-
-        durationEl.innerText =
-        formatTime(audio.duration);
-
-        requestAnimationFrame(animateProgress);
-    }
+    requestAnimationFrame(animateProgress);
+  }
 }
 
 /* CLICK TO SEEK */
 
 progressArea.addEventListener("click", (e) => {
+  const width = progressArea.clientWidth;
 
-    const width =
-    progressArea.clientWidth;
+  const clickX = e.offsetX;
 
-    const clickX =
-    e.offsetX;
+  const duration = audio.duration;
 
-    const duration =
-    audio.duration;
-
-    audio.currentTime =
-    (clickX / width) * duration;
+  audio.currentTime = (clickX / width) * duration;
 });
 
 /* AUDIO ENDED */
 
 audio.addEventListener("ended", () => {
+  playBtn.innerHTML = "▶";
 
-    playBtn.innerHTML = "▶";
-
-    progressBar.style.width = "0%";
+  progressBar.style.width = "0%";
 });
 
 /* LOAD DURATION */
 
 audio.addEventListener("loadedmetadata", () => {
-
-    durationEl.innerText =
-    formatTime(audio.duration);
+  durationEl.innerText = formatTime(audio.duration);
 });
 
 /* FORMAT TIME */
 
-function formatTime(time){
+function formatTime(time) {
+  if (isNaN(time)) return "0:00";
 
-    if(isNaN(time)) return "0:00";
+  const mins = Math.floor(time / 60);
 
-    const mins =
-    Math.floor(time / 60);
+  const secs = Math.floor(time % 60);
 
-    const secs =
-    Math.floor(time % 60);
-
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
 }
-function loadPrompt(type){
+function loadPrompt(type) {
+  const textarea = document.getElementById("text");
 
-    const textarea =
-    document.getElementById("text");
+  const language = document.getElementById("language").value;
 
-    const language =
-    document.getElementById("language").value;
-
-    const prompts = {
-
-        eng:{
-
-            demo:
-`Hello everyone.
+  const prompts = {
+    eng: {
+      demo: `Hello everyone.
 
 This project demonstrates an AI-powered Text-to-Speech system.
 
@@ -228,15 +164,13 @@ Users can select a language, enter text, and instantly generate audio output.
 
 Thank you for listening.`,
 
-            presentation:
-`Artificial Intelligence is transforming the world.
+      presentation: `Artificial Intelligence is transforming the world.
 
 AI enables machines to learn, reason, and make decisions.
 
 Today, AI is widely used in healthcare, finance, education, and transportation.`,
 
-            support:
-`Welcome to NeuroVoice AI.
+      support: `Welcome to NeuroVoice AI.
 
 Your request has been received successfully.
 
@@ -244,16 +178,13 @@ Our system is currently processing your input.
 
 Please wait while we generate your audio response.`,
 
-            education:
-`Photosynthesis is the process by which green plants convert sunlight into chemical energy.
+      education: `Photosynthesis is the process by which green plants convert sunlight into chemical energy.
 
-This process is essential for life on Earth because it produces oxygen and food.`
-        },
+This process is essential for life on Earth because it produces oxygen and food.`,
+    },
 
-        hin:{
-
-            demo:
-`नमस्कार।
+    hin: {
+      demo: `नमस्कार।
 
 यह परियोजना कृत्रिम बुद्धिमत्ता आधारित टेक्स्ट-टू-स्पीच प्रणाली का प्रदर्शन करती है।
 
@@ -263,15 +194,13 @@ This process is essential for life on Earth because it produces oxygen and food.
 
 धन्यवाद।`,
 
-            presentation:
-`कृत्रिम बुद्धिमत्ता दुनिया को बदल रही है।
+      presentation: `कृत्रिम बुद्धिमत्ता दुनिया को बदल रही है।
 
 एआई मशीनों को सीखने, सोचने और निर्णय लेने में सक्षम बनाती है।
 
 आज एआई का उपयोग स्वास्थ्य, शिक्षा, वित्त और परिवहन में किया जा रहा है।`,
 
-            support:
-`न्यूरोवॉइस एआई में आपका स्वागत है।
+      support: `न्यूरोवॉइस एआई में आपका स्वागत है।
 
 आपका अनुरोध सफलतापूर्वक प्राप्त हो गया है।
 
@@ -279,125 +208,109 @@ This process is essential for life on Earth because it produces oxygen and food.
 
 कृपया कुछ क्षण प्रतीक्षा करें।`,
 
-            education:
-`प्रकाश संश्लेषण वह प्रक्रिया है जिसके द्वारा हरे पौधे सूर्य के प्रकाश को रासायनिक ऊर्जा में परिवर्तित करते हैं।
+      education: `प्रकाश संश्लेषण वह प्रक्रिया है जिसके द्वारा हरे पौधे सूर्य के प्रकाश को रासायनिक ऊर्जा में परिवर्तित करते हैं।
 
-यह प्रक्रिया पृथ्वी पर जीवन के लिए अत्यंत महत्वपूर्ण है।`
-        }
-    };
+यह प्रक्रिया पृथ्वी पर जीवन के लिए अत्यंत महत्वपूर्ण है।`,
+    },
+  };
 
-    textarea.value =
-    prompts[language][type];
+  textarea.value = prompts[language][type];
 
-    textarea.focus();
+  textarea.focus();
 
-    textarea.scrollIntoView({
+  textarea.scrollIntoView({
+    behavior: "smooth",
 
-        behavior:"smooth",
+    block: "center",
+  });
+  textarea.classList.add("active-prompt");
 
-        block:"center"
-    });
-    textarea.classList.add(
-    "active-prompt"
-);
-
-setTimeout(() => {
-
-    textarea.classList.remove(
-        "active-prompt"
-    );
-
-}, 1500);
+  setTimeout(() => {
+    textarea.classList.remove("active-prompt");
+  }, 1500);
 }
-function updateExamples(){
+function updateExamples() {
+  const language = document.getElementById("language").value;
 
-    const language =
-    document.getElementById("language").value;
+  const cards = document.querySelectorAll(".prompt-card");
 
-    const cards =
-    document.querySelectorAll(".prompt-card");
+  if (language === "hin") {
+    cards[0].querySelector("h3").innerText = "प्रोजेक्ट डेमो";
 
-    if(language === "hin"){
+    cards[0].querySelector("p").innerText =
+      "कॉलेज प्रोजेक्ट और विवा प्रदर्शन के लिए।";
 
-        cards[0].querySelector("h3").innerText =
-        "प्रोजेक्ट डेमो";
+    cards[1].querySelector("h3").innerText = "एआई प्रस्तुति";
 
-        cards[0].querySelector("p").innerText =
-        "कॉलेज प्रोजेक्ट और विवा प्रदर्शन के लिए।";
+    cards[1].querySelector("p").innerText =
+      "कृत्रिम बुद्धिमत्ता की पेशेवर प्रस्तुति।";
 
+    cards[2].querySelector("h3").innerText = "ग्राहक सहायता";
 
+    cards[2].querySelector("p").innerText =
+      "स्वचालित ग्राहक सेवा प्रतिक्रियाएँ।";
 
-        cards[1].querySelector("h3").innerText =
-        "एआई प्रस्तुति";
+    cards[3].querySelector("h3").innerText = "शैक्षिक सामग्री";
 
-        cards[1].querySelector("p").innerText =
-        "कृत्रिम बुद्धिमत्ता की पेशेवर प्रस्तुति।";
+    cards[3].querySelector("p").innerText =
+      "सीखने और शिक्षण से संबंधित उदाहरण।";
+  } else {
+    cards[0].querySelector("h3").innerText = "Project Demo";
 
+    cards[0].querySelector("p").innerText =
+      "Perfect for college projects and viva demonstrations.";
 
+    cards[1].querySelector("h3").innerText = "AI Presentation";
 
-        cards[2].querySelector("h3").innerText =
-        "ग्राहक सहायता";
+    cards[1].querySelector("p").innerText =
+      "Explain Artificial Intelligence professionally.";
 
-        cards[2].querySelector("p").innerText =
-        "स्वचालित ग्राहक सेवा प्रतिक्रियाएँ।";
+    cards[2].querySelector("h3").innerText = "Customer Support";
 
+    cards[2].querySelector("p").innerText =
+      "Generate automated customer responses.";
 
+    cards[3].querySelector("h3").innerText = "Education";
 
-        cards[3].querySelector("h3").innerText =
-        "शैक्षिक सामग्री";
-
-        cards[3].querySelector("p").innerText =
-        "सीखने और शिक्षण से संबंधित उदाहरण।";
-    }
-
-    else{
-
-        cards[0].querySelector("h3").innerText =
-        "Project Demo";
-
-        cards[0].querySelector("p").innerText =
-        "Perfect for college projects and viva demonstrations.";
-
-
-
-        cards[1].querySelector("h3").innerText =
-        "AI Presentation";
-
-        cards[1].querySelector("p").innerText =
-        "Explain Artificial Intelligence professionally.";
-
-
-
-        cards[2].querySelector("h3").innerText =
-        "Customer Support";
-
-        cards[2].querySelector("p").innerText =
-        "Generate automated customer responses.";
-
-
-
-        cards[3].querySelector("h3").innerText =
-        "Education";
-
-        cards[3].querySelector("p").innerText =
-        "Convert educational content into speech.";
-    }
+    cards[3].querySelector("p").innerText =
+      "Convert educational content into speech.";
+  }
 }
-function selectLanguage(value,text){
+function selectLanguage(value, text) {
+  document.getElementById("language").value = value;
 
-    document
-    .getElementById("language")
-    .value = value;
+  document.getElementById("selectedText").innerText = text;
 
-    document
-    .getElementById("selectedText")
-    .innerText = text;
+  document.getElementById("customSelect").classList.remove("active");
 
-    document
-    .getElementById("customSelect")
-    .classList
-    .remove("active");
-
-    updateExamples();
+  updateExamples();
 }
 updateExamples();
+
+addHistory(text, data.audio_url);
+
+function addHistory(text,url){
+
+    const history =
+    document.getElementById("historyList");
+
+    const item =
+    document.createElement("div");
+
+    item.className =
+    "history-item";
+
+    item.innerHTML=`
+
+        <div class="history-text">
+            🎵 ${text.substring(0,60)}...
+        </div>
+
+        <a href="${url}" download>
+            Download
+        </a>
+
+    `;
+
+    history.prepend(item);
+}
