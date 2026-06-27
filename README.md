@@ -7,7 +7,7 @@ sdk: docker
 pinned: false
 ---
 
-# Text-To-Speech
+# NeuroVoice AI
 
 A modern AI Text-to-Speech web application built with:
 
